@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+
+set -exo pipefail
+
+export FLASK_APP=review_apps
+export FLASK_ENV=development
+exec flask run -h 0.0.0.0

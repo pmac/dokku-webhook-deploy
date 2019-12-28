@@ -1,0 +1,12 @@
+version: '3.7'
+services:
+  web:
+    build:
+      context: .
+    image: review_apps:${GIT_COMMIT:-latest}
+    command: bin/run-dev
+    env_file: .env
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./:/app:delegated
