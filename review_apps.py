@@ -13,10 +13,11 @@ dokku_ssh = ssh.bake(settings.SSH_DOKKU_HOST)
 
 
 def dokku(cmd):
-    buff = StringIO()
-    dokku_ssh(cmd, _out=buff)
-    buff.seek(0)
-    return buff
+    return StringIO(str(dokku_ssh(cmd)))
+
+
+def dokku_apps_list():
+    return [app.strip() for app in dokku('apps:list') if not app.startswith('===')]
 
 
 @app.route('/')
@@ -26,9 +27,7 @@ def home():
 
 @app.route('/apps/')
 def apps_list():
-    return {
-        'apps': [app.strip() for app in dokku('apps:list') if not app.startswith('===')]
-    }
+    return {'apps': dokku_apps_list()}
 
 
 @app.route('/hooks/', methods=['POST'])
