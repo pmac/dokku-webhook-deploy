@@ -17,3 +17,4 @@ config = ConfigManager([
 
 SECRET_KEY = str(uuid4())
 GITHUB_SECRET = config('GITHUB_SECRET', raise_error=False)
+SSH_DOKKU_HOST = config('SSH_DOKKU_HOST')

@@ -1,6 +1,7 @@
 import hmac
 
 from flask import Flask, request
+from io import StringIO
 from sh import ssh
 
 import settings
@@ -8,10 +9,14 @@ import settings
 
 app = Flask(__name__)
 app.config.from_object(settings)
+dokku_ssh = ssh.bake(settings.SSH_DOKKU_HOST)
 
 
 def dokku(cmd):
-    return ssh('dokku@techb.us', t=cmd)
+    buff = StringIO()
+    dokku_ssh(cmd, _out=buff)
+    buff.seek(0)
+    return buff
 
 
 @app.route('/')
@@ -21,7 +26,9 @@ def home():
 
 @app.route('/apps/')
 def apps_list():
-    return str(dokku('apps:list'))
+    return {
+        'apps': [app.strip() for app in dokku('apps:list') if not app.startswith('===')]
+    }
 
 
 @app.route('/hooks/', methods=['POST'])
