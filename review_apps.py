@@ -1,6 +1,7 @@
 import hmac
 
 from flask import Flask, request
+from sh import ssh
 
 import settings
 
@@ -9,9 +10,18 @@ app = Flask(__name__)
 app.config.from_object(settings)
 
 
+def dokku(cmd):
+    return ssh('dokku@techb.us', t=cmd)
+
+
 @app.route('/')
 def home():
     return {'status': 'ok'}
+
+
+@app.route('/apps/')
+def apps_list():
+    return str(dokku('apps:list'))
 
 
 @app.route('/hooks/', methods=['POST'])
