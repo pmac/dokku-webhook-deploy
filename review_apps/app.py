@@ -1,23 +1,12 @@
 import hmac
 
 from flask import Flask, request
-from io import StringIO
-from sh import ssh
 
-from review_apps import settings
+from review_apps import dokku, settings
 
 
 app = Flask('review_apps')
 app.config.from_object(settings)
-dokku_ssh = ssh.bake(settings.SSH_DOKKU_HOST)
-
-
-def dokku(cmd):
-    return StringIO(str(dokku_ssh(cmd)))
-
-
-def dokku_apps_list():
-    return [app.strip() for app in dokku('apps:list') if not app.startswith('===')]
 
 
 @app.route('/')
@@ -27,11 +16,21 @@ def home():
 
 @app.route('/apps/')
 def apps_list():
-    return {'apps': dokku_apps_list()}
+    return {'apps': dokku.apps_list()}
 
 
 @app.route('/hooks/', methods=['POST'])
 def hooks():
+    sig = check_github_sig()
+    if sig is not None:
+        return sig
+
+    data = request.json
+    print(data)
+    return '', 204
+
+
+def check_github_sig():
     if settings.GITHUB_SECRET:
         signature = request.headers.get('X-Hub-Signature')
         if signature:
@@ -45,7 +44,4 @@ def hooks():
             app.logger.warning('No HMAC signature received')
             return 'HMAC Signature missing', 401
 
-
-    data = request.json
-    print(data)
-    return '', 204
+    return None
