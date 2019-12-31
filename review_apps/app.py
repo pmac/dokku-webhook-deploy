@@ -4,10 +4,10 @@ from flask import Flask, request
 from io import StringIO
 from sh import ssh
 
-import settings
+from review_apps import settings
 
 
-app = Flask(__name__)
+app = Flask('review_apps')
 app.config.from_object(settings)
 dokku_ssh = ssh.bake(settings.SSH_DOKKU_HOST)
 

@@ -10,8 +10,8 @@ RUN apt-get update && \
 
 WORKDIR /app
 CMD ["bin/run-prod"]
-COPY ./bin ./bin
 
 COPY ./requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
-COPY ./review_apps.py ./settings.py ./
+COPY ./bin ./bin
+COPY ./review_apps ./review_apps

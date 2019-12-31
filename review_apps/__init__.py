@@ -1,0 +1,1 @@
+from review_apps.app import app
