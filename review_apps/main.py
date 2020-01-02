@@ -1,6 +1,6 @@
 import hmac
 
-from flask import Flask, request
+from flask import Flask, request, send_from_directory
 
 from slugify import slugify
 
@@ -29,6 +29,11 @@ def hooks():
 
     handle_push(request.json)
     return '', 204
+
+
+@app.route('/deploy-logs/<path:filename>')
+def download_file(filename):
+    return send_from_directory(settings.DEPLOY_LOGS_BASE_PATH, filename)
 
 
 def check_github_sig():
