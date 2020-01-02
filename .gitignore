@@ -1,3 +1,6 @@
+repos/
+sample_push_data.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

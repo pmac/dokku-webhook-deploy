@@ -1,1 +1,1 @@
-from review_apps.app import app
+from review_apps.main import app

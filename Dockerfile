@@ -3,9 +3,10 @@ FROM python:3.8-slim-buster
 ENV LANG=C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
+ENV FLASK_APP=review_apps
 
 RUN apt-get update && \
-    apt-get install -y --no-install-recommends ssh && \
+    apt-get install -y --no-install-recommends ssh git && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
