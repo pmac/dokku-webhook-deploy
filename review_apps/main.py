@@ -80,7 +80,7 @@ def handle_push(data):
         app.logger.warning(f'branch name not supported: {data["ref"]}')
 
     app.logger.debug(f'got app_name: {app_name}')
-    repo.update(data['repository'])
+    repo.update(data)
     app.logger.debug('repo updated')
     repo.push(data, app_name)
     app.logger.debug('repo pushed')
