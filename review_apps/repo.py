@@ -28,10 +28,16 @@ def push(data, app_name):
     head_commit = data['head_commit']['id']
     repo_path = get_repo_path(repo_owner, repo_name)
     dokku_host = settings.SSH_DOKKU_HOST
-    deploy_log_file = settings.DEPLOY_LOGS_BASE_PATH / f'{app_name}.txt'
+    if not settings.DEPLOY_LOGS_BASE_PATH.exists():
+        settings.DEPLOY_LOGS_BASE_PATH.mkdir()
+
+    deploy_log_file = str(settings.DEPLOY_LOGS_BASE_PATH / f'{app_name}.txt')
     dokku.apps_create(app_name)
     with pushd(repo_path):
-        git.push(f'{dokku_host}:{app_name}', f'{head_commit}:refs/heads/master',
-                 _err_to_out=True, _out=deploy_log_file, _bg=True)
+        git.push(f'{dokku_host}:{app_name}',
+                 f'{head_commit}:refs/heads/master',
+                 _err_to_out=True,
+                 _out=deploy_log_file,
+                 _bg=True)
 
 

@@ -2,4 +2,4 @@
 
 set -exo pipefail
 
-exec gunicorn -w 4 -b 0.0.0.0:5000 review_apps:app
+exec gunicorn -w 4 -b 0.0.0.0:5000 -t 300 review_apps:app
