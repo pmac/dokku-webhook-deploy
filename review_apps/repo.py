@@ -1,3 +1,6 @@
+from datetime import datetime
+from textwrap import dedent
+
 from sh import git, pushd
 
 from review_apps import dokku, settings
@@ -31,13 +34,26 @@ def push(data, app_name):
     if not settings.DEPLOY_LOGS_BASE_PATH.exists():
         settings.DEPLOY_LOGS_BASE_PATH.mkdir()
 
-    deploy_log_file = str(settings.DEPLOY_LOGS_BASE_PATH / f'{app_name}.txt')
+    deploy_log_file = settings.DEPLOY_LOGS_BASE_PATH / f'{app_name}.txt'
+    dlfo = deploy_log_file.open('wb')
+    dlfo.write(dedent(f"""\
+        =====================================================
+        Deployment at {datetime.utcnow().isoformat()}
+        Reposotory:   {data['repository']['full_name']}
+        Branch name:  {data['ref']}
+        App name:     {app_name}
+        Github user:  {data['pusher']['name']}
+        Commit:       {head_commit}
+        =====================================================
+
+    """).encode('utf-8'))
+    dlfo.flush()
     dokku.apps_create(app_name)
     with pushd(repo_path):
         git.push(f'{dokku_host}:{app_name}',
                  f'{head_commit}:refs/heads/master',
                  _err_to_out=True,
-                 _out=deploy_log_file,
+                 _out=dlfo,
                  _bg=True)
 
 
