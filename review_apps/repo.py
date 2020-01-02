@@ -15,6 +15,7 @@ def update(repo_data):
     if not repo_path.exists():
         repo_path.mkdir(parents=True)
         with pushd(repo_path):
+            print(f'git clone')
             print(git.clone(repo_url, '.', bare=True, _err_to_out=True))
     else:
         with pushd(repo_path):
@@ -29,6 +30,6 @@ def push(data, app_name):
     dokku_host = settings.SSH_DOKKU_HOST
     dokku.apps_create(app_name)
     with pushd(repo_path):
-        print(git.push(f'{dokku_host}:{app_name}', f'{head_commit}:master', _err_to_out=True))
+        print(git.push(f'{dokku_host}:{app_name}', f'{head_commit}:refs/heads/master', _err_to_out=True))
 
 
