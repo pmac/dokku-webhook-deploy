@@ -58,7 +58,8 @@ def push(data, app_name):
         if config_file:
             dokku.config_set(app_name, config_file)
 
-        git.push(f'{dokku_host}:{app_name}',
+        git.push('--force',
+                 f'{dokku_host}:{app_name}',
                  f'{head_commit}:refs/heads/master',
                  _err_to_out=True,
                  _out=dlfo,
