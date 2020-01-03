@@ -10,7 +10,7 @@ from sh.contrib import git
 from review_apps import settings
 
 
-dokku = ssh.bake(settings.SSH_DOKKU_HOST)
+dokku = ssh.bake(settings.SSH_DOKKU_HOST, o='StrictHostKeyChecking=no')
 
 
 def apps_list():
@@ -36,10 +36,6 @@ def config_set(app_name, env_file):
 
     if configs:
         dokku('config:set', '--no-restart', app_name, *configs)
-
-
-def letsencrypt(app_name):
-    dokku('letsencrypt', app_name)
 
 
 def get_repo_path(repo_owner, repo_name):
@@ -96,3 +92,5 @@ def push_repo(data, app_name):
                      f'{head_commit}:refs/heads/master',
                      _err_to_out=True,
                      _out=dlfo)
+            if settings.APPS_LETSENCRYPT:
+                dokku('letsencrypt:auto-renew', app_name, _out=dlfo)

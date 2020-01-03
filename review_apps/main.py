@@ -108,11 +108,7 @@ def handle_push(data):
     app.logger.debug('repo updated')
     dokku.push_repo(data, app_name)
     app.logger.debug('repo pushed')
-    if settings.APPS_LETSENCRYPT:
-        protocol = 'https'
-        dokku.letsencrypt(app_name)
-    else:
-        protocol = 'http'
+    protocol = 'https' if settings.APPS_LETSENCRYPT else 'http'
     slack.notify('Deployment finished!',
                  status='shipped',
                  app_name=app_name,
