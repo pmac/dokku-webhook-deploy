@@ -38,6 +38,10 @@ def config_set(app_name, env_file):
         dokku('config:set', '--no-restart', app_name, *configs)
 
 
+def letsencrypt(app_name):
+    dokku('letsencrypt', app_name)
+
+
 def get_repo_path(repo_owner, repo_name):
     return settings.REPOS_BASE_PATH / repo_owner / f'{repo_name}.git'
 
@@ -91,5 +95,4 @@ def push_repo(data, app_name):
                      f'{dokku_host}:{app_name}',
                      f'{head_commit}:refs/heads/master',
                      _err_to_out=True,
-                     _out=dlfo,
-                     _bg=True)
+                     _out=dlfo)

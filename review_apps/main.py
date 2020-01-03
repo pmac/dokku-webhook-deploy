@@ -5,7 +5,7 @@ from flask import Flask, request, send_from_directory
 
 from slugify import slugify
 
-from review_apps import dokku, settings
+from review_apps import dokku, settings, slack
 
 
 dictConfig({
@@ -103,7 +103,18 @@ def handle_push(data):
         return
 
     app.logger.debug(f'got app_name: {app_name}')
+    slack.notify(f'Starting deployment of {app_name}')
     dokku.update_repo(data)
     app.logger.debug('repo updated')
     dokku.push_repo(data, app_name)
     app.logger.debug('repo pushed')
+    if settings.APPS_LETSENCRYPT:
+        protocol = 'https'
+        dokku.letsencrypt(app_name)
+    else:
+        protocol = 'http'
+    slack.notify('Deployment finished!',
+                 status='shipped',
+                 app_name=app_name,
+                 app_url=f'{protocol}://{app_name}.{settings.APPS_DOKKU_DOMAIN}',
+                 log_url=f'https://review-apps.{settings.APPS_DOKKU_DOMAIN}/deploy-logs/{app_name}.txt')
