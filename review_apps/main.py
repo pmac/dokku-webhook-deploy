@@ -99,7 +99,8 @@ def get_app_name(data):
 def handle_push(data):
     app_name = get_app_name(data)
     if not app_name:
-        app.logger.warning(f'branch name not supported: {data["ref"]}')
+        app.logger.info(f'branch name not supported: {data["ref"]}')
+        return
 
     app.logger.debug(f'got app_name: {app_name}')
     dokku.update_repo(data)

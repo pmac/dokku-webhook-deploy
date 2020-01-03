@@ -67,29 +67,29 @@ def push_repo(data, app_name):
         settings.DEPLOY_LOGS_BASE_PATH.mkdir()
 
     deploy_log_file = settings.DEPLOY_LOGS_BASE_PATH / f'{app_name}.txt'
-    dlfo = deploy_log_file.open('wb')
-    dlfo.write(dedent(f"""\
-        =====================================================
-        Deployment:  {datetime.utcnow().isoformat()}
-        Repository:  {data['repository']['full_name']}
-        Branch name: {data['ref']}
-        App name:    {app_name}
-        Github user: {data['pusher']['name']}
-        Commit:      {head_commit}
-        =====================================================
-    """).encode('utf-8'))
-    with pushd(repo_path):
-        try:
-            config_file = StringIO(str(git.show(f'{head_commit}:.review-apps-config')))
-        except ErrorReturnCode:
-            config_file = None
+    with deploy_log_file.open('wb') as dlfo:
+        dlfo.write(dedent(f"""\
+            =====================================================
+            Deployment:  {datetime.utcnow().isoformat()}
+            Repository:  {data['repository']['full_name']}
+            Branch name: {data['ref']}
+            App name:    {app_name}
+            Github user: {data['pusher']['name']}
+            Commit:      {head_commit}
+            =====================================================
+        """).encode('utf-8'))
+        with pushd(repo_path):
+            try:
+                config_file = StringIO(str(git.show(f'{head_commit}:.review-apps-config')))
+            except ErrorReturnCode:
+                config_file = None
 
-        if config_file:
-            config_set(app_name, config_file)
+            if config_file:
+                config_set(app_name, config_file)
 
-        git.push('--force',
-                 f'{dokku_host}:{app_name}',
-                 f'{head_commit}:refs/heads/master',
-                 _err_to_out=True,
-                 _out=dlfo,
-                 _bg=True)
+            git.push('--force',
+                     f'{dokku_host}:{app_name}',
+                     f'{head_commit}:refs/heads/master',
+                     _err_to_out=True,
+                     _out=dlfo,
+                     _bg=True)
