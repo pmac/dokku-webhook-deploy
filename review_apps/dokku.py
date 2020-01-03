@@ -50,10 +50,10 @@ def update_repo(data):
     if not repo_path.exists():
         repo_path.mkdir(parents=True)
         with pushd(repo_path):
-            git.clone(repo_url, '.', bare=True, _err_to_out=True)
+            git.clone(repo_url, '.', bare=True)
     else:
         with pushd(repo_path):
-            git.fetch('origin', data['ref'], _err_to_out=True)
+            git.fetch('origin', data['ref'])
 
 
 def push_repo(data, app_name):
