@@ -1,5 +1,7 @@
 from io import StringIO
+from uuid import uuid4
 
+from everett.manager import parse_env_file
 from sh import ssh
 
 from review_apps import settings
@@ -21,3 +23,15 @@ def apps_create(app_name):
         return
 
     dokku('apps:create', app_name)
+
+
+def config_set(app_name, env_file):
+    env_data = parse_env_file(env_file)
+    configs = []
+    for k, v in env_data.values():
+        if v == '{uuid}':
+            v = str(uuid4())
+
+        configs.append(f'{k}={v}')
+
+    dokku('config:set', '--no-restart', app_name, *configs)

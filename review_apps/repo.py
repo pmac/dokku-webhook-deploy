@@ -1,7 +1,8 @@
 from datetime import datetime
+from io import StringIO
 from textwrap import dedent
 
-from sh import git, pushd
+from sh import git, pushd, ErrorReturnCode
 
 from review_apps import dokku, settings
 
@@ -26,6 +27,7 @@ def update(data):
 
 
 def push(data, app_name):
+    dokku.apps_create(app_name)
     repo_name = data['repository']['name']
     repo_owner = data['repository']['owner']['name']
     head_commit = data['head_commit']['id']
@@ -38,22 +40,26 @@ def push(data, app_name):
     dlfo = deploy_log_file.open('wb')
     dlfo.write(dedent(f"""\
         =====================================================
-        Deployment at {datetime.utcnow().isoformat()}
-        Reposotory:   {data['repository']['full_name']}
-        Branch name:  {data['ref']}
-        App name:     {app_name}
-        Github user:  {data['pusher']['name']}
-        Commit:       {head_commit}
+        Deployment:  {datetime.utcnow().isoformat()}
+        Repository:  {data['repository']['full_name']}
+        Branch name: {data['ref']}
+        App name:    {app_name}
+        Github user: {data['pusher']['name']}
+        Commit:      {head_commit}
         =====================================================
-
     """).encode('utf-8'))
     dlfo.flush()
-    dokku.apps_create(app_name)
     with pushd(repo_path):
+        try:
+            config_file = StringIO(str(git.show(f'{data["ref"]}:.review-apps-config')))
+        except ErrorReturnCode:
+            config_file = None
+
+        if config_file:
+            dokku.config_set(app_name, config_file)
+
         git.push(f'{dokku_host}:{app_name}',
                  f'{head_commit}:refs/heads/master',
                  _err_to_out=True,
                  _out=dlfo,
                  _bg=True)
-
-

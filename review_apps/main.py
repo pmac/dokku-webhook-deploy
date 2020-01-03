@@ -1,4 +1,5 @@
 import hmac
+from logging.config import dictConfig
 
 from flask import Flask, request, send_from_directory
 
@@ -6,6 +7,22 @@ from slugify import slugify
 
 from review_apps import dokku, repo, settings
 
+
+dictConfig({
+    'version': 1,
+    'formatters': {'default': {
+        'format': '[%(asctime)s] %(levelname)s in %(module)s: %(message)s',
+    }},
+    'handlers': {'wsgi': {
+        'class': 'logging.StreamHandler',
+        'stream': 'ext://flask.logging.wsgi_errors_stream',
+        'formatter': 'default'
+    }},
+    'root': {
+        'level': settings.LOG_LEVEL,
+        'handlers': ['wsgi']
+    }
+})
 
 app = Flask('review_apps')
 app.config.from_object(settings)
@@ -32,7 +49,7 @@ def hooks():
 
 
 @app.route('/deploy-logs/<path:filename>')
-def download_file(filename):
+def deploy_logs(filename):
     return send_from_directory(settings.DEPLOY_LOGS_BASE_PATH, filename)
 
 
