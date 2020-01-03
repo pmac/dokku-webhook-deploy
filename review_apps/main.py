@@ -5,7 +5,7 @@ from flask import Flask, request, send_from_directory
 
 from slugify import slugify
 
-from review_apps import dokku, repo, settings
+from review_apps import dokku, settings
 
 
 dictConfig({
@@ -102,7 +102,7 @@ def handle_push(data):
         app.logger.warning(f'branch name not supported: {data["ref"]}')
 
     app.logger.debug(f'got app_name: {app_name}')
-    repo.update(data)
+    dokku.update_repo(data)
     app.logger.debug('repo updated')
-    repo.push(data, app_name)
+    dokku.push_repo(data, app_name)
     app.logger.debug('repo pushed')
