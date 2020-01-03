@@ -31,7 +31,7 @@ def notify(message, status=None, app_name=None, app_url=None, log_url=None):
         return
 
     status_emoji = STATUSES.get(status, STATUSES['default'])
-    message = f'{status_emoji} *{status}*: {message}'
+    message = f'{status_emoji} *{status.upper()}*: {message}'
     if app_url:
         message += f' | <{app_url}|{app_name}>'
     if log_url:

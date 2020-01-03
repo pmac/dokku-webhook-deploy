@@ -103,7 +103,7 @@ def handle_push(data):
         return
 
     app.logger.debug(f'got app_name: {app_name}')
-    slack.notify(f'Starting deployment of {app_name}')
+    slack.notify(f'Starting deployment of {app_name}', status='starting')
     dokku.update_repo(data)
     app.logger.debug('repo updated')
     dokku.push_repo(data, app_name)
