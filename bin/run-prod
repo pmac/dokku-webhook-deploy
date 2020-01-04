@@ -2,4 +2,8 @@
 
 set -exo pipefail
 
+if [[ -n "$SSH_DOKKU_HOST" ]]; then
+  ssh-keyscan -p "${SSH_DOKKU_PORT:-22}" -H "$SSH_DOKKU_HOST" > "$HOME/.ssh/known_hosts"
+fi
+
 exec gunicorn -w 4 -b 0.0.0.0:5000 -t 300 review_apps:app

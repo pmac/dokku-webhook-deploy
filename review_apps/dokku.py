@@ -9,8 +9,9 @@ from sh.contrib import git
 
 from review_apps import settings
 
+SSH_CONNECT_STRING = f'{settings.SSH_DOKKU_USER}@{settings.SSH_DOKKU_HOST}'
 
-dokku = ssh.bake(settings.SSH_DOKKU_HOST, o='StrictHostKeyChecking=no')
+dokku = ssh.bake('-tp', settings.SSH_DOKKU_PORT, SSH_CONNECT_STRING, '--')
 
 
 def apps_list():
@@ -66,7 +67,7 @@ def push_repo(data, app_name):
     repo_owner = data['repository']['owner']['name']
     head_commit = data['head_commit']['id']
     repo_path = get_repo_path(repo_owner, repo_name)
-    dokku_host = settings.SSH_DOKKU_HOST
+    dokku_host = f'{SSH_CONNECT_STRING}:{settings.SSH_DOKKU_PORT}'
     if not settings.DEPLOY_LOGS_BASE_PATH.exists():
         settings.DEPLOY_LOGS_BASE_PATH.mkdir()
 
@@ -92,7 +93,7 @@ def push_repo(data, app_name):
                 config_set(app_name, config_file)
 
             git.push('--force',
-                     f'{dokku_host}:{app_name}',
+                     f'ssh://{dokku_host}/{app_name}',
                      f'{head_commit}:refs/heads/master',
                      _err_to_out=True,
                      _out=dlfo)
