@@ -27,7 +27,7 @@ def apps_create(app_name):
 
 
 def apps_destroy(app_name):
-    dokku('--force', 'apps:destroy', app_name)
+    dokku('apps:destroy', app_name, force=True)
 
 
 def config_set(app_name, env_file):

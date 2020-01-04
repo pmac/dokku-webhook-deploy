@@ -97,7 +97,6 @@ def get_app_name(data):
 
 
 def handle_push(data):
-    print(data)
     app_name = get_app_name(data)
     if not app_name:
         app.logger.info(f'branch name not supported: {data["ref"]}')
