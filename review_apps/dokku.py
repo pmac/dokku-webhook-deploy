@@ -62,7 +62,6 @@ def update_repo(data):
 
 
 def push_repo(data, app_name):
-    apps_create(app_name)
     repo_name = data['repository']['name']
     repo_owner = data['repository']['owner']['name']
     head_commit = data['head_commit']['id']

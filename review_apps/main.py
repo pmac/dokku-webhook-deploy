@@ -98,6 +98,7 @@ def get_app_name(data):
 
 def handle_push(data):
     app_name = get_app_name(data)
+    user = data['pusher']['name']
     if not app_name:
         app.logger.info(f'branch name not supported: {data["ref"]}')
         return
@@ -106,12 +107,12 @@ def handle_push(data):
     if data['deleted']:
         app.logger.debug(f'deleting app_name: {app_name}')
         dokku.apps_destroy(app_name)
-        slack.notify(app_name, 'deleted')
-        return
-
-    slack.notify(app_name, 'starting')
-    dokku.update_repo(data)
-    app.logger.debug('repo updated')
-    dokku.push_repo(data, app_name)
-    app.logger.debug('repo pushed')
-    slack.notify(app_name, 'shipped')
+        slack.notify(user, app_name, 'deleted')
+    else:
+        slack.notify(user, app_name, 'started')
+        dokku.apps_create(app_name)
+        dokku.update_repo(data)
+        app.logger.debug('repo updated')
+        dokku.push_repo(data, app_name)
+        app.logger.debug('repo pushed')
+        slack.notify(user, app_name, 'shipped')

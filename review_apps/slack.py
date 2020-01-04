@@ -7,9 +7,9 @@ SLACK_CLIENT = None
 STATUSES = {
     'default': ':sparkles:',
     'shipped': ':ship:',
-    'success': ':tada:',
+    'succeeded': ':tada:',
     'deleted': ':boom:',
-    'failure': ':rotating_light:',
+    'failed': ':rotating_light:',
     'warning': ':warning:',
 }
 
@@ -26,7 +26,7 @@ def slack_client():
     return SLACK_CLIENT
 
 
-def notify(app_name, status):
+def notify(user, app_name, status):
     slack = slack_client()
     if slack is None:
         return
@@ -35,7 +35,7 @@ def notify(app_name, status):
     app_url = f'{protocol}://{app_name}.{settings.APPS_DOKKU_DOMAIN}'
     log_url = f'https://review-apps.{settings.APPS_DOKKU_DOMAIN}/deploy-logs/{app_name}.txt'
     status_emoji = STATUSES.get(status, STATUSES['default'])
-    message = (f'{status_emoji} *{status.upper()}*: '
+    message = (f'{status_emoji} *{user}* *{status.upper()}*: '
                f'<{app_url}|{app_name}> | '
                f'<{log_url}|deploy log>')
     slack.chat.post_message(settings.SLACK_CHANNEL, message)
