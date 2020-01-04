@@ -25,15 +25,16 @@ def slack_client():
     return SLACK_CLIENT
 
 
-def notify(message, status=None, app_name=None, app_url=None, log_url=None):
+def notify(app_name, status):
     slack = slack_client()
     if slack is None:
         return
 
+    protocol = 'https' if settings.APPS_LETSENCRYPT else 'http'
+    app_url = f'{protocol}://{app_name}.{settings.APPS_DOKKU_DOMAIN}'
+    log_url = f'https://review-apps.{settings.APPS_DOKKU_DOMAIN}/deploy-logs/{app_name}.txt'
     status_emoji = STATUSES.get(status, STATUSES['default'])
-    message = f'{status_emoji} *{status.upper()}*: {message}'
-    if app_url:
-        message += f' | <{app_url}|{app_name}>'
-    if log_url:
-        message += f' | <{log_url}|deploy log>'
+    message = (f'{status_emoji} *{status.upper()}*: '
+               f'<{app_url}|{app_name}> | '
+               f'<{log_url}|deploy log>')
     slack.chat.post_message(settings.SLACK_CHANNEL, message)

@@ -97,20 +97,16 @@ def get_app_name(data):
 
 
 def handle_push(data):
+    print(data)
     app_name = get_app_name(data)
     if not app_name:
         app.logger.info(f'branch name not supported: {data["ref"]}')
         return
 
     app.logger.debug(f'got app_name: {app_name}')
-    slack.notify(f'Starting deployment of {app_name}', status='starting')
+    slack.notify(app_name, 'starting')
     dokku.update_repo(data)
     app.logger.debug('repo updated')
     dokku.push_repo(data, app_name)
     app.logger.debug('repo pushed')
-    protocol = 'https' if settings.APPS_LETSENCRYPT else 'http'
-    slack.notify('Deployment finished!',
-                 status='shipped',
-                 app_name=app_name,
-                 app_url=f'{protocol}://{app_name}.{settings.APPS_DOKKU_DOMAIN}',
-                 log_url=f'https://review-apps.{settings.APPS_DOKKU_DOMAIN}/deploy-logs/{app_name}.txt')
+    slack.notify(app_name, 'shipped')

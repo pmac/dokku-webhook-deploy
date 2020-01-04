@@ -93,4 +93,9 @@ def push_repo(data, app_name):
                      _err_to_out=True,
                      _out=dlfo)
             if settings.APPS_LETSENCRYPT:
+                dlfo.write(dedent(f"""\
+                    ================================
+                    Let's Encrypt: Add or renew cert
+                    ================================
+                """).encode('utf-8'))
                 dokku('letsencrypt:auto-renew', app_name, _out=dlfo)
