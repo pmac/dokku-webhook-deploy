@@ -104,6 +104,12 @@ def handle_push(data):
         return
 
     app.logger.debug(f'got app_name: {app_name}')
+    if data['deleted']:
+        app.logger.debug(f'deleting app_name: {app_name}')
+        dokku.apps_destroy(app_name)
+        slack.notify(app_name, 'deleted')
+        return
+
     slack.notify(app_name, 'starting')
     dokku.update_repo(data)
     app.logger.debug('repo updated')

@@ -19,10 +19,15 @@ def apps_list():
 
 
 def apps_create(app_name):
-    if app_name in apps_list():
-        return
+    try:
+        dokku('apps:create', app_name)
+    except ErrorReturnCode:
+        # app already exists
+        pass
 
-    dokku('apps:create', app_name)
+
+def apps_destroy(app_name):
+    dokku('--force', 'apps:destroy', app_name)
 
 
 def config_set(app_name, env_file):

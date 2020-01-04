@@ -8,6 +8,7 @@ STATUSES = {
     'default': ':sparkles:',
     'shipped': ':ship:',
     'success': ':tada:',
+    'deleted': ':boom:',
     'failure': ':rotating_light:',
     'warning': ':warning:',
 }
