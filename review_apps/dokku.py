@@ -1,3 +1,4 @@
+import json
 from datetime import datetime
 from io import StringIO
 from textwrap import dedent
@@ -31,17 +32,46 @@ def apps_destroy(app_name):
     dokku('apps:destroy', app_name, force=True)
 
 
-def config_set(app_name, env_file):
-    env_data = parse_env_file(env_file)
+def config_set(app_name, app_json, log_file):
+    log_file.write('=======================\n')
+    if not app_json:
+        log_file.write('No app.json file found\n')
+        log_file.write('=======================\n')
+        return
+
+    try:
+        data = json.loads(app_json)
+    except json.JSONDecodeError:
+        log_file.write('JSON decoding error\n')
+        log_file.write('=======================\n')
+        return
+
+    if 'env' not in data:
+        log_file.write('No configuration to set\n')
+        log_file.write('=======================\n')
+        return
+
     configs = []
-    for k, v in env_data.items():
-        if v == '{uuid}':
-            v = str(uuid4())
+    for k, v in data['env'].items():
+        if isinstance(v, dict):
+            if 'value' in v:
+                v = v['value']
+            elif 'generator' in v:
+                if v['generator'] in ['secret', 'uuid']:
+                    v = str(uuid4())
+            else:
+                continue
 
         configs.append(f'{k}={v}')
 
     if configs:
+        log_file.write('Setting app configuration variables:\n')
+        log_file.write(', '.join(data['env'].keys()) + '\n')
+        log_file.write('=======================\n')
         dokku('config:set', '--no-restart', app_name, *configs)
+    else:
+        log_file.write('No configuration to set\n')
+        log_file.write('=======================\n')
 
 
 def get_repo_path(repo_owner, repo_name):
@@ -85,12 +115,11 @@ def push_repo(data, app_name):
         """).encode('utf-8'))
         with pushd(repo_path):
             try:
-                config_file = StringIO(str(git.show(f'{head_commit}:.review-apps-config')))
+                app_json = str(git.show(f'{head_commit}:app.json'))
             except ErrorReturnCode:
-                config_file = None
+                app_json = None
 
-            if config_file:
-                config_set(app_name, config_file)
+            config_set(app_name, app_json, dlfo)
 
             git.push('--force',
                      f'ssh://{dokku_host}/{app_name}',
