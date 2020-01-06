@@ -8,4 +8,5 @@ setup a Let's Encrypt cert for it. You can also tell it other specific branches 
 This should be able to fully replace Heroku's GitHub integration including it's Review Apps.
 
 If you are using the [dokku-require](https://github.com/crisward/dokku-require) plugin the required volumes
-will be created for you via the `app.json` file; otherwise you can set them up manually following the install instructions.
+will be created for you via the `app.json` file; otherwise you can set them up manually following the 
+[install instructions](https://dokku-webhook-deploy.readthedocs.io/).
