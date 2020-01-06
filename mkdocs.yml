@@ -1,0 +1,6 @@
+site_name: Dokku Webhook Deploy
+repo_url: https://github.com/pmac/dokku-webhook-deploy
+edit_uri: ""
+nav:
+  - Home: index.md
+  - Config Options: config.md
