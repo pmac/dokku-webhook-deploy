@@ -8,7 +8,7 @@ from everett.manager import parse_env_file
 from sh import pushd, ssh, ErrorReturnCode
 from sh.contrib import git
 
-from review_apps import settings
+from webhook_deploy import settings
 
 SSH_CONNECT_STRING = f'{settings.SSH_DOKKU_USER}@{settings.SSH_DOKKU_HOST}'
 

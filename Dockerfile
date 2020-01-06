@@ -3,7 +3,7 @@ FROM python:3.8-slim-buster
 ENV LANG=C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
-ENV FLASK_APP=review_apps
+ENV FLASK_APP=webhook_deploy
 
 ARG USER_ID=1000
 ARG GROUP_ID=1000
@@ -20,6 +20,6 @@ CMD ["bin/run-prod"]
 COPY ./requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 COPY ./bin ./bin
-COPY ./review_apps ./review_apps
+COPY ./webhook_deploy ./webhook_deploy
 
 USER dokku

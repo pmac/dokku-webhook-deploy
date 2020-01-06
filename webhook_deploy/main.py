@@ -5,7 +5,7 @@ from flask import Flask, request, send_from_directory
 
 from slugify import slugify
 
-from review_apps import dokku, settings, slack
+from webhook_deploy import dokku, settings, slack
 
 
 dictConfig({
@@ -24,7 +24,7 @@ dictConfig({
     }
 })
 
-app = Flask('review_apps')
+app = Flask('webhook_deploy')
 app.config.from_object(settings)
 
 

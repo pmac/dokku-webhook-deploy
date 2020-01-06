@@ -3,7 +3,7 @@ services:
   web:
     build:
       context: .
-    image: review_apps:${GIT_COMMIT:-latest}
+    image: webhook_deploy:${GIT_COMMIT:-latest}
     command: bin/run-dev
     env_file: .env
     ports:

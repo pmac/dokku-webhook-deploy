@@ -1,6 +1,6 @@
 from slacker import Slacker
 
-from review_apps import settings
+from webhook_deploy import settings
 
 
 SLACK_CLIENT = None
