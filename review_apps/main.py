@@ -70,24 +70,34 @@ def check_github_sig():
     return None
 
 
-def get_branch_name(branch_name):
-    if branch_name.startswith('refs/heads/'):
-        # ref is in the form "refs/heads/master"
-        branch_name = branch_name[11:]
+def get_branch_name(ref):
+    """
+    Take a full git ref name and return a more simple branch name.
+    e.g. `refs/heads/demo/dude` -> `demo/dude`
 
-    if branch_name.startswith(settings.DEMO_BRANCH_PREFIX):
-        return branch_name[len(settings.DEMO_BRANCH_PREFIX):]
-    else:
-        return None
+    :param ref: the git head ref sent by GitHub
+    :return: str the simple branch name
+    """
+    refs_prefix = 'refs/heads/'
+    if ref.startswith(refs_prefix):
+        # ref is in the form "refs/heads/master"
+        ref = ref[len(refs_prefix):]
+
+    return ref
 
 
 def get_app_name(data):
+    demo = False
     branch_name = get_branch_name(data['ref'])
-    if branch_name is None:
+    if branch_name.startswith(settings.DEMO_BRANCH_PREFIX):
+        demo = True
+
+    repo_name = data['repository']['name']
+    repo_full_name = data['repository']['full_name']
+    deploy_branches = settings.get_deploy_branches(repo_full_name)
+    if not (demo or branch_name in deploy_branches):
         return None
 
-    repo_full_name = data['repository']['full_name']
-    repo_name = data['repository']['name']
     app_name = settings.APP_NAME_TEMPLATE.format(
         branch_name=branch_name,
         repo_full_name=repo_full_name,
