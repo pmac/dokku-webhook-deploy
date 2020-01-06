@@ -1,0 +1,21 @@
+{
+  "name": "Dokku Webhook Deploy",
+  "description": "An app for deploying to a Dokku server in response to webhooks.",
+  "website": "https://github.com/pmac/dokku-webhook-deploy",
+  "dokku": {
+    "volumes": [
+      {
+        "host": "/var/lib/dokku/data/storage/$APP/deploy-logs",
+        "app": "/app/deploy-logs"
+      },
+      {
+        "host": "/var/lib/dokku/data/storage/$APP/repos",
+        "app": "/app/repos"
+      },
+      {
+        "host": "/var/lib/dokku/data/storage/$APP/ssh",
+        "app": "/home/dokku/.ssh"
+      }
+    ]
+  }
+}

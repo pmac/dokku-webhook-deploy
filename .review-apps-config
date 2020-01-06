@@ -1,3 +1,0 @@
-# This is the kind of file to use to config your review apps
-TEST_CONFIG=True
-SHOULD_GET_A_RANDOM_UUID={uuid}
