@@ -10,14 +10,15 @@ Can be the usual things (e.g. 'DEBUG', 'INFO', etc.). Default is 'INFO'.
 
 When you create your webhook in your GitHub repo settings, you have the option of setting a secret. It's highly recommended that you set this. If you do, github will use that secret to calculate an HMAC signature of the POST data using SHA1 and [send it with the POST in a header](https://developer.github.com/webhooks/#delivery-headers). Set the same secret in this variable to have the app calculate the same HMAC signature and verify that they match. In this way we can verify that this POST request did indeed come from a service that has this secret, which hopefully means only Github.
 
-## SSH_DOKKU_{HOST,PORT,USER}
+## SSH_DOKKU_*
 
 The connection information for your Dokku server via SSH. The only required one is `SSH_DOKKU_HOST` which has no default
 and nothing else really works without it. The others have useful defaults:
 
 ```dotenv
-SSH_DOKKU_USER=dokku
-SSH_DOKKU_PORT=22
+SSH_DOKKU_HOST=dokku.me # set this to your domain
+SSH_DOKKU_USER=dokku # default
+SSH_DOKKU_PORT=22 # default
 ```
 
 ## APPS_DOKKU_DOMAIN
@@ -34,7 +35,7 @@ This determines which branches will be deployed as demos (or review apps). The d
 
 ## DEFAULT_DEPLOY_BRANCHES
 
-If you'd like for the system to deploy any other branches that don't match the demo prefix above, you can set them here. This should be a comma separated list of branch names:
+If you'd like for the system to deploy any other branches that don't match the demo prefix above, you can set them here. This should be a comma separated list of branch names. The default is an empty list.
 
 ```dotenv
 DEFAULT_DEPLOY_BRANCHES=master,stage,prod
