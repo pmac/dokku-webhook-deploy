@@ -1,5 +1,3 @@
-# Dokku Webhook Deploy
-
 Use [Dokku][] to auto-deploy branches pushed to Github.
 
 By default it will create and deploy apps based on branches pushed and named `demo/<name>`, where `<name>`
@@ -10,18 +8,18 @@ This should be able to fully replace Heroku's GitHub integration including it's 
 If you are using the [dokku-require](https://github.com/crisward/dokku-require) plugin the required volumes
 will be created for you via the `app.json` file; otherwise you can set them up manually following the install instructions.
 
-## Setup
+# Installation
 
 This app is meant to be deployed to your [Dokku][] server, but could really run anywhere. All that is required
 is for Github to be able to post webhooks to it, and for it to have SSH access to your Dokku server. All of the shell
 commands below should be run on your Dokku server as the `dokku` user.
 
-### 1. Fork this repo
+## 1. Fork this repo
 
 You may want to make changes to the code, but you may not need to. This is an optional step, but it's a good idea
 so that you'll have a place to put your changes should you make them.
 
-### 2. Clone your fork
+## 2. Clone your fork
 
 Or clone the original.
 
@@ -29,7 +27,7 @@ Or clone the original.
 $ git clone https://github.com/pmac/dokku-webhook-deploy
 ```
 
-### 3. Create and configure your app
+## 3. Create and configure your app
 
 ```shell
 $ export APP_NAME=deployer # or whatever you want your app name to be
@@ -43,7 +41,7 @@ $ dokku config:set $APP_NAME \
 You can see more about all of the configuration options in the [config docs](config.md), but this should
 be a good start.
 
-### 4. Setup the volumes
+## 4. Setup the volumes
 
 The app will store some things on the Dokku host: ssh keys, deployment logs, and the bare git repos.
 
@@ -54,7 +52,7 @@ $ dokku storage:mount $APP_NAME /var/lib/dokku/data/storage/$APP_NAME/deploy-log
 $ dokku storage:mount $APP_NAME /var/lib/dokku/data/storage/$APP_NAME/repos:/app/repos
 ```
 
-### 5. Setup the build arguments
+## 5. Setup the build arguments
 
 Because the app interacts with the filesystem via the above volumes, it's best if it does so as the `dokku`
 user so that permission issues don't arise. To combat that the Dockerfile will accept build args for the user
@@ -65,7 +63,7 @@ $ dokku docker-options:add $APP_NAME build "--build-arg GROUP_ID=$(id -g)"
 $ dokku docker-options:add $APP_NAME build "--build-arg USER_ID=$(id -u)"
 ```
 
-### 6. Create an SSH key
+## 6. Create an SSH key
 
 The app communicates with Dokku via SSH. You should create a new key pair for this specifically.
 Make sure you create it with an empty passphrase.
@@ -83,7 +81,7 @@ $ sudo dokku ssh-keys:add webhook-deploy-app ./id_rsa.pub
 
 > Note: You may have to do this one as root. Run it via `sudo` from an account with permission to do that.
 
-### 7. Deploy the webhook-deploy app
+## 7. Deploy the webhook-deploy app
 
 From your machine push this app you cloned in step 2 to the new app you created in Dokku. Once the initial deployment
 is finished and working it is strongly recommended to use the [Let's Encrypt plugin][] to enable TLS on this app so that
@@ -93,7 +91,7 @@ communication between GitHub and your server is encrypted:
 $ dokku letsencrypt $APP_NAME
 ```
 
-### 8. Setup the webhook in Github
+## 8. Setup the webhook in Github
 
 Navigate to your repo's webhook settings (URL below) and enter the following for the web:
 
@@ -104,7 +102,7 @@ Navigate to your repo's webhook settings (URL below) and enter the following for
 * Which events would you like to trigger this webhook?: `Just the push event`
 * Active: checked
 
-### 9. Profit
+## 9. Profit
 
 You should be done! Now you can push a branch like `demo/test` to your repo and hopefully see a new app! If you configure Slack
 integration it will give you the link to the new app and the deployment log. If not you can find the deployment log at a URL like:
