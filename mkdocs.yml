@@ -1,5 +1,6 @@
 site_name: Dokku Webhook Deploy
 repo_url: https://github.com/pmac/dokku-webhook-deploy
+theme: readthedocs
 edit_uri: ""
 
 nav:
